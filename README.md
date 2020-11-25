@@ -1,114 +1,103 @@
 # Redis Commander
 
-Redis web management tool written in node.js
+Redis UI (web Ui) написан на node.js.
+Инструмент позволяет просматривать ключи в интерфейсе.
+Отлично подойдет для мониторинга ключей в кубике (используйте в dev версии).
+Данный инструмент отлично подойдет для QA команды, которой не дают доступ в redis-cli, но проверять существование ключей необходимо)
 
-# Install and Run
+# Установка
 
 ```bash
 $ npm install -g redis-commander
 $ redis-commander
 ```
 
-Installation via `yarn` is currently not supported. Please use `npm` as package manager.
+Установка через **yarn** в настоящее время не поддерживается. Только менеджер пакетов **npm**.
 
-Or run Redis Commander as Docker image `rediscommander/redis-commander` (instructions see below).
+Лучшей практикой будет запуск Redis Commander с помощью Docker rediscommander/redis-commander(инструкции см. Ниже).
 
-# Features
+# Функционал
 
-Web-UI to display and edit data within multiple different Redis servers.
+Веб-интерфейс для отображения и редактирования данных на нескольких разных серверах Redis.
 
-It has support for the following data types to view, add, update and delete data:
+Поддерживает следующие типы данных для просмотра, добавления, обновления и удаления данных:
 * Strings
 * Lists
 * Sets
 * Sorted Set
-* Streams (Basic support based on HFXBus project from https://github.com/exocet-engineering/hfx-bus, only view/add/delete data)
-* ReJSON documents (Basic support, only for viewing values of ReJSON type keys)
+* Streams (базовая поддержка на основе проекта HFXBus из https://github.com/exocet-engineering/hfx-bus , только просмотр / добавление / удаление данных)
+* ReJSON (базовая поддержка, только для просмотра значений ключей типа ReJSON)
 
 # Usage
 
 ```
 $ redis-commander --help
 Options:
-  --redis-port                         The port to find redis on.                  [string]
-  --redis-host                         The host to find redis on.                  [string]
-  --redis-socket                       The unix-socket to find redis on.           [string]
-  --redis-password                     The redis password.                         [string]
-  --redis-db                           The redis database.                         [string]
-  --redis-label                        The label to display for the connection.    [string]
-  --redis-tls                          Use TLS for connection to redis server or sentinel. [boolean] [default: false]
-  --redis-optional                     Set to true if no permanent auto-reconnect shall be done if server is down [boolean] [default: false]
-  --sentinel-port                      The port to find redis sentinel on.         [string]
-  --sentinel-host                      The host to find redis sentinel on.         [string]
-  --sentinels                          Comma separated list of sentinels with host:port. [string]
-  --sentinel-name                      The redis sentinel group name to use.       [string]  [default: mymaster]
-  --sentinel-password                  The password for sentinel instance.         [string]
-  --http-auth-username, --http-u       The http authorisation username.            [string]
-  --http-auth-password, --http-p       The http authorisation password.            [string]
-  --http-auth-password-hash, --http-h  The http authorisation password hash.       [string]
-  --address, -a                        The address to run the server on.           [string]  [default: 0.0.0.0]
-  --port, -p                           The port to run the server on.              [string]  [default: 8081]
-  --url-prefix, -u                     The url prefix to respond on.               [string]  [default: ""]
-  --root-pattern, --rp                 The root pattern of the redis keys.         [string]  [default: "*"]
-  --read-only                          Start app in read-only mode.                [boolean] [default: false]
-  --trust-proxy                        App is run behind proxy (enable Express "trust proxy") [boolean|string] [default: false]
-  --nosave, --ns                       Do not save new connections to config file. [boolean] [default: true]
-  --noload, --nl                       Do not load connections from config.        [boolean] [default: false]
-  --use-scan, --sc                     Use scan instead of keys.                   [boolean] [default: false]
-  --clear-config, --cc                 clear configuration file.
-  --migrate-config                     migrate old configuration file in $HOME to new style.
-  --scan-count, --sc                   The size of each seperate scan.             [integer] [default: 100]
-  --no-log-data                        Do not log data values from redis store.    [boolean] [default: false]
-  --open                               Open web-browser with Redis-Commander.      [boolean] [default: false]
-  --folding-char, --fc                 Character to fold keys at in tree view.     [character] [default: ":"]
-  --test, -t                           test final configuration (file, env-vars, command line)
+  --redis-port                         Указать порт для Redis.                                [string]
+  --redis-host                         Указать хост для Redis.                                [string]
+  --redis-socket                       Указать unix-socket для Redis.                         [string]
+  --redis-password                     Указать пароль для Redis.                              [string]
+  --redis-db                           Указать бд для Redis.                                  [string]
+  --redis-label                        Указать метку для соединения.                          [string]
+  --redis-tls                          Использовать TLS для подключения к серверу redis или sentinel. [boolean] [по умолчанию: false]
+  --redis-optional                     Установить значение true, если автопереподключение не должно выполняться, если сервер не работает [boolean] [по умолчанию: false]
+  --sentinel-port                      Указать порт Redis для подключения к sentinel.         [string]
+  --sentinel-host                      Указать хост Redis для подключения к sentinel.         [string]
+  --sentinels                          Список sentinel разделенный запятыми host:port.        [string]
+  --sentinel-name                      Указать группу sentinel.                               [string]  [по умолчанию: mymaster]
+  --sentinel-password                  Указать пароль sentinel инстанса.                      [string]
+  --http-auth-username, --http-u       Указать пользователя (username) для http authorisation.[string]
+  --http-auth-password, --http-p       Указать пароль для http authorisation.                 [string]
+  --http-auth-password-hash, --http-h  Указать хеш пароля для http authorisation.             [string]
+  --address, -a                        Указать хост для запуска сервера.                      [string]  [по умолчанию: 0.0.0.0]
+  --port, -p                           Указать порт для запуска сервера.                      [string]  [по умолчанию: 8081]
+  --url-prefix, -u                     Указать префикс URL-адреса куда слать ответы.          [string]  [по умолчанию: ""]
+  --root-pattern, --rp                 Указать корневой шаблон ключей Redis.                  [string]  [по умолчанию: "*"]
+  --read-only                          Указать нужно ли запускать в режиме только чтение.     [boolean] [по умолчанию: false]
+  --trust-proxy                        Указать нужно ли запускать за прокси (включите Express «доверенные прокси») [boolean|string] [по умолчанию: false]
+  --nosave, --ns                       Указать можно ли не сохранять новые подключения в файл конфигурации. [boolean] [по умолчанию: true]
+  --noload, --nl                       Указать можно ли не использовать соединения из конфигурации.         [boolean] [по умолчанию: false]
+  --use-scan, --sc                     Указать командеру использовать команду scan вместо keys.             [boolean] [по умолчанию: false]
+  --clear-config, --cc                 Очистить файл конфигурации.
+  --migrate-config                     Перенести старый файл конфигурации из $HOME в новый стиль.
+  --scan-count, --sc                   Указать размер каждого отдельного scan.     [integer] [по умолчанию: 100]
+  --no-log-data                        Указать можно ли не записывать значения данных из хранилища Redis.    [boolean] [по умолчанию: false]
+  --open                               Открыть веб-браузер с помощью Redis-Commander.      [boolean] [по умолчанию: false]
+  --folding-char, --fc                 Указать символ для складывания ключей в дереве.     [character] [по умолчанию: ":"]
+  --test, -t                           Протестировать конфигурацию, провалидировать (file, env-vars, command line)
 ```
 
-The connection can be established either via direct connection to redis server or indirect
-via a sentinel instance.
+Соединение может быть установлено либо через прямое соединение с сервером redis, либо косвенно через экземпляр дозорного.
 
-## Configuration
+## Конфигурация
 
-Redis Commander can be configured by configuration files, environment variables or using command line
-parameters. The different types of config values overwrite each other, only the last (most important)
-value is used.
+Redis Commander можно настроить с помощью файлов конфигурации, переменных среды или параметров командной строки. Различные типы значений конфигурации перезаписывают друг друга, используется только последнее (наиболее важное) значение.
 
-For configuration files the `node-config` module (https://github.com/lorenwest/node-config) is used, with default to json syntax.
+Для файлов конфигурации используется node-config модуль ( https://github.com/lorenwest/node-config ) с синтаксисом по умолчанию json.
 
-The order of precedence for all configuration values (from least to most important) is:
+Порядок приоритета для всех значений конфигурации (от наименьшего к наиболее важному):
+- Файлы конфигурации
 
-- Configuration files
+  `default.json` - этот файл содержит все значения по умолчанию и НЕ ДОЛЖЕН изменяться
 
-  `default.json` - this file contains all default values and SHOULD NOT be changed
+  `local.json` - необязательный файл, здесь должны быть размещены все локальные переопределения значений `default.json`, а также список подключений redis, которые используются при запуске
 
-  `local.json` - optional file, all local overwrites for values inside default.json should be placed here as well
-  as a list of redis connections to use at startup
+  `local-<NODE_ENV>.json` - Не добавляйте в этот файл ничего, кроме подключений! Redis Commander перезапишет этот файл каждый раз, когда соединение добавляется или удаляется через пользовательский интерфейс. Внутри контейнера Docker этот файл используется для хранения всех подключений, проанализированных из REDIS_HOSTS env var. Этот файл перезаписывает все соединения, определенные внутри `local.json`
 
-  `local-<NODE_ENV>.json` - Do not add anything else than connections to this file! Redis Commander will overwrite this whenever a
-  connection is added or removed via user interface. Inside docker container this file is used to store
-  all connections parsed from REDIS_HOSTS env var.
-  This file overwrites all connections defined inside `local.json`
+  Есть еще несколько возможных файлов, доступных для использования - пожалуйста, проверьте wiki node-config, чтобы получить полный список всех возможных [файлов](https://github.com/lorenwest/node-config/wiki/Configuration-Files)
 
-  There are some more possible files available to use - please check the node-config Wiki
-  for an complete list of all possible file names (https://github.com/lorenwest/node-config/wiki/Configuration-Files)
+- Переменные среды - полный список возможных переменных окружения (кроме специфичных для Docker) можно получить из файла `config/custom-environment-variables.json` вместе с их сопоставлением с соответствующим ключом конфигурации.
 
-- Environment variables - the full list of env vars possible (except the docker specific ones)
-  can be get from the file `config/custom-environment-variables.json` together with their mapping
-  to the respective configuration key.
+- Параметры командной строки - перезаписывает все
 
-- Command line parameters - Overwrites everything
+Чтобы проверить окончательную конфигурацию, созданную из файлов, набор env-vars и параметры командной строки перезаписывают start redis commander с дополнительным параметром "--test". Все недопустимые ключи конфигурации будут перечислены в выводе. Тест конфигурации не проверяет, можно ли разрешить имена хостов или IP-адреса.
 
-To check the final configuration created from files, env-vars set and command line param overwrites
-start redis commander with additional param "--test". All invalid configuration keys will be listed
-in the output. The config test does not check if hostnames or ip addresses can be resolved.
+Дополнительную информацию можно найти в документации на [docs/configuration.md](docs/configuration.md)
+и [docs/connections.md](docs/connections.md).
 
-More informations can be found in the documentation at [docs/configuration.md](docs/configuration.md)
-and [docs/connections.md](docs/connections.md).
+## Переменные среды (ENV)
 
-## Environment Variables
-
-These environment variables can be used starting Redis Commander as normal
-application or inside docker container (defined inside file `config/custom-environment-variables.json`):
+Эти переменные среды можно использовать для запуска Redis Commander как обычного приложения или внутри контейнера докеров (определенного внутри файла `config/custom-environment-variables.json`):
 
 ```
 HTTP_USER
@@ -134,9 +123,7 @@ BINARY_AS_HEX
 
 ## Docker
 
-All environment variables listed at "Environment Variables" can be used running image
-with Docker. The following additional environment variables are available too (defined inside
-docker startup script):
+Все переменные среды, перечисленные в разделе «Переменные среды», можно использовать при запуске образа с Docker. Также доступны следующие дополнительные переменные среды (определенные внутри скрипта запуска докера):
 
 ```
 REDIS_PORT
@@ -158,18 +145,15 @@ SENTINEL_PASSWORD_FILE
 K8S_SIGTERM
 ```
 
-The `K8S_SIGTERM` variable (default "0") can be set to "1" to work around kubernetes specificas
-to allow pod replacement with zero downtime. More information on how kubernetes handles termination of old pods and the
-setup of new ones can be found within the thread [https://github.com/kubernetes/contrib/issues/1140#issuecomment-290836405]
+Переменная `K8S_SIGTERM` (по умолчанию "0") может быть установлено в "1" для работы c kubernetes specificas, чтобы обеспечит возможность замены pod с нулевым временем простоя. Более подробную информацию о том, как kubernetes обрабатывает завершение работы старых pod и настройку новых, можно найти в ветке [https://github.com/kubernetes/contrib/issues/1140#issuecomment-290836405]
 
-Hosts can be optionally specified with a comma separated string by setting the `REDIS_HOSTS` environment variable.
+Хосты можно дополнительно указать с помощью строки, разделенной запятыми, путем установки `REDIS_HOSTS` в переменных среды.
 
-After running the container, `redis-commander` will be available at [localhost:8081](http://localhost:8081).
+После запуска контейнера, `redis-commander` будет доступен по адресу [localhost:8081](http://localhost:8081).
 
-### Valid host strings
+### Valid host
 
-the `REDIS_HOSTS` environment variable is a comma separated list of host definitions,
-where each host should follow one of these templates:
+`REDIS_HOSTS` переменная окружения представляет собой разделенный запятыми список определений хостов, где каждый хост должен следовать один из этих шаблонов:
 
 `hostname`
 
@@ -181,12 +165,9 @@ where each host should follow one of these templates:
 
 `label:hostname:port:dbIndex:password`
 
-Connection strings defined with `REDIS_HOSTS` variable do not support TLS connections.
-If remote redis server needs TLS write all connections into a config file instead
-of using `REDIS_HOSTS` (see [docs/connections.md](docs/connections.md) at the end 
-within the more complex examples).
+Строки подключения, определенные с помощью `REDIS_HOSTS` переменной, не поддерживают подключения TLS. Если удаленному серверу Redis требуется TLS, запишите все подключения в файл конфигурации вместо использования REDIS_HOSTS(см. [docs/connections.md](docs/connections.md) в конце более сложные примеры).
 
-### With docker-compose
+### С помощью docker-compose
 
 ```yml
 version: '3'
@@ -207,11 +188,11 @@ services:
     - "8081:8081"
 ```
 
-### Without docker-compose
+### Без docker-compose
 
-#### Simplest
+#### Простой
 
-If you're running redis on `localhost:6379`, this is all you need to get started.
+Если вы используете Redis по пути:порту `localhost:6379`, тогда выполните команду и этого будет достаточно.
 
 ```bash
 docker run --rm --name redis-commander -d \
@@ -219,7 +200,7 @@ docker run --rm --name redis-commander -d \
   rediscommander/redis-commander:latest
 ```
 
-#### Specify single host
+#### Если нужно указать хост
 
 ```bash
 docker run --rm --name redis-commander -d \
@@ -228,7 +209,7 @@ docker run --rm --name redis-commander -d \
   rediscommander/redis-commander:latest
 ```
 
-#### Specify multiple hosts with labels
+#### Если нужно указать несколько хостов с метками
 
 ```bash
 docker run --rm --name redis-commander -d \
@@ -239,11 +220,11 @@ docker run --rm --name redis-commander -d \
 
 ## Kubernetes
 
-An example deployment can be found at [k8s/redis-commander/deployment.yaml](k8s/redis-commander/deployment.yaml).
+Пример развертывания можно найти на [k8s/redis-commander/deployment.yaml](k8s/redis-commander/deployment.yaml).
 
-If you already have a cluster running with `redis` in the default namespace, deploy `redis-commander` with `kubectl apply -f k8s/redis-commander`. If you don't have `redis` running yet, you can deploy a simple pod with `kubectl apply -f k8s/redis`.
+Если у вас уже есть кластер, работающий с `redis` iв пространстве имен по умолчанию, разверните `redis-commander` с помощью `kubectl apply -f k8s/redis-commander`. Если у вас еще нет `redis` запущенной версии, вы можете развернуть простой модуль с помощью `kubectl apply -f k8s/redis`.
 
-Alternatively, you can add a container to a deployment's spec like this:
+В качестве альтернативы вы можете добавить контейнер в спецификацию развертывания следующим образом:
 
 ```
 containers:
@@ -257,46 +238,43 @@ containers:
     containerPort: 8081
 ```
 
-known issues with Kubernetes:
+известные проблемы с Kubernetes:
 
-* using REDIS_HOSTS works only with a password-less redis db. You must specify REDIS_HOST on a password protected redis db
+* использование REDIS_HOSTS работает только с Redis db без пароля. Вы должны указать REDIS_HOST на Redis db, защищенном паролем
 
 
 ## Helm chart
 
-You can install the application on any Kubernetes cluster using Helm.
-There is no helm repo available currently, therefor local checkout of helm sources inside 
-this repo is needed:
+Вы можете установить приложение на любой кластер Kubernetes с помощью Helm. В настоящее время нет доступного репозитория helm, поэтому требуется локальная проверка источников helm внутри этой репы:
 
 ```sh
 helm -n myspace install redis-web-ui ./k8s/helm-chart/redis-commander
 ```
 
-More [Documentation](k8s/helm-chart/README.md) about this Helm chart and its values.
+Дополнительно [документация](k8s/helm-chart/README.md) об Helm chart и ее значениях.
 
 ## OpenShift V3
 
-To use the stock Node.js image builder do the following.
+Чтобы использовать Node.js образ, используйте следующее.
 
-1. Open Catalog and select the Node.js template
-1. Specify the name of the application and the URL to the [redis-command github repository](https://github.com/joeferner/redis-commander.git)
-1. Click the ```advanced options``` link
-1. (optional) specify the hostname for the route - _if one is not specified it will be generated_
-1. In the Deployment Configuration section
-   * Add ```REDIS_HOST``` environment variable whose value is the name of the redis service - e.g., ```redis```
-   * Add ```REDIS_PORT``` environment variable whose value is the port exposed of the redis service - e.g., ```6379```
-   * Add value from secret generated by the [redis template](https://github.com/sclorg/redis-container/blob/master/examples/redis-persistent-template.json):
+1. Откройте Каталог и выберите шаблон Node.js
+1. Укажите имя приложения и URL-адрес [redis-command github repository](https://github.com/joeferner/redis-commander.git)
+1. Клик на ссылку ```advanced options```
+1. (optional) укажите имя хоста для маршрута - _если оно не указано, оно будет сгенерировано_
+1. В разделе "Конфигурация развертывания"
+   * Добавьте переменную среды ```REDIS_HOST``` , значение которой является именем службы Redis, например ```redis```
+   * Добавьте переменную среды ```REDIS_PORT```, значение которой представляет собой порт, доступный для службы Redis, например ```6379```
+   * Добавьте пароль, сгенерированного в [redis шаблон](https://github.com/sclorg/redis-container/blob/master/examples/redis-persistent-template.json):
      * name: ```REDIS_PASSWORD```
      * resource: ```redis```
      * key: ```database-password```
-1. (optional) specify a label such as ```appl=redis-commander-dev1```
-   * _this label will be applied on all objects created allowing for easy deletion later via:_
+1. (optional) укажите метку, например ```appl=redis-commander-dev1```
+   * _эта метка будет применена ко всем созданным объектам, что позволит легко удалить их позже с помощью:_
    ```bash
    oc delete all --selector appl=redis-commander-dev1
    ```
 
-## Build images based on this one
+## Создание своего образа Docker на основе данного
 
-To use this images as a base image for other images you need to call "apk update" inside your Dockerfile
-before adding other apk packages with "apk add foo". Afterwards, to reduce your image size, you may
-remove all temporary apk configs too again as this Dockerfile does.
+Чтобы использовать эти образы в качестве базового образа для других образов, вам необходимо вызвать "apk update" внутри вашего Dockerfile перед добавлением других пакетов apk с помощью "apk add foo". 
+Впоследствии, чтобы уменьшить размер изображения, вы можете снова удалить все временные конфигурации apk, как это делает этот файл Docker.
